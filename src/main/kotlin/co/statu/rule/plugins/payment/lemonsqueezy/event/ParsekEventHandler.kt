@@ -14,7 +14,8 @@ class ParsekEventHandler : ParsekEventListener {
             PaymentLemonSqueezyPlugin.INSTANCE,
             LemonSqueezyConfig::class.java,
             logger,
-            listOf()
+            listOf(),
+            listOf("payment-lemonsqueezy")
         )
 
         logger.info("Initialized plugin config")
