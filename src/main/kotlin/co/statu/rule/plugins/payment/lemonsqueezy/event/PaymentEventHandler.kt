@@ -1,14 +1,20 @@
 package co.statu.rule.plugins.payment.lemonsqueezy.event
 
+import co.statu.parsek.api.annotation.EventListener
 import co.statu.rule.plugins.payment.PaymentSystem
 import co.statu.rule.plugins.payment.event.PaymentEventListener
 import co.statu.rule.plugins.payment.lemonsqueezy.LemonSqueezyPaymentIntegration
 import co.statu.rule.plugins.payment.lemonsqueezy.PaymentLemonSqueezyPlugin
 
-class PaymentEventHandler : PaymentEventListener {
-    override fun onPaymentSystemInit(paymentSystem: PaymentSystem) {
-        paymentSystem.register(LemonSqueezyPaymentIntegration())
+@EventListener
+class PaymentEventHandler(
+    private val paymentLemonSqueezyPlugin: PaymentLemonSqueezyPlugin,
+) : PaymentEventListener {
+    private val lemonSqueezyPaymentIntegration by lazy {
+        paymentLemonSqueezyPlugin.pluginBeanContext.getBean(LemonSqueezyPaymentIntegration::class.java)
+    }
 
-        PaymentLemonSqueezyPlugin.paymentCallbackHandler = paymentSystem.paymentCallbackHandler
+    override fun onPaymentSystemInit(paymentSystem: PaymentSystem) {
+        paymentSystem.register(lemonSqueezyPaymentIntegration)
     }
 }

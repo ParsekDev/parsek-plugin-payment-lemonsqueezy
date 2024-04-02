@@ -1,6 +1,7 @@
 package co.statu.rule.plugins.payment.lemonsqueezy.route
 
 import co.statu.parsek.Main
+import co.statu.parsek.annotation.Endpoint
 import co.statu.parsek.api.config.PluginConfigManager
 import co.statu.parsek.error.BadRequest
 import co.statu.parsek.error.NoPermission
@@ -10,6 +11,7 @@ import co.statu.rule.auth.util.SecurityUtil
 import co.statu.rule.plugins.payment.api.PaymentCallbackHandler
 import co.statu.rule.plugins.payment.db.model.PurchaseStatus
 import co.statu.rule.plugins.payment.lemonsqueezy.LemonSqueezyConfig
+import co.statu.rule.plugins.payment.lemonsqueezy.PaymentLemonSqueezyPlugin
 import com.google.gson.Gson
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
@@ -23,13 +25,24 @@ import io.vertx.json.schema.common.dsl.Schemas.stringSchema
 import org.slf4j.Logger
 import java.util.*
 
+@Endpoint
 class CheckoutCallbackAPI(
+    private val paymentLemonSqueezyPlugin: PaymentLemonSqueezyPlugin,
     private val logger: Logger,
-    private val pluginConfigManager: PluginConfigManager<LemonSqueezyConfig>,
-    private val paymentCallbackHandler: PaymentCallbackHandler,
-    private val environmentType: Main.Companion.EnvironmentType
 ) : Api() {
     override val paths = listOf(Path("/checkout/callback/lemonsqueezy", RouteType.POST))
+
+    private val environmentType by lazy {
+        paymentLemonSqueezyPlugin.environmentType
+    }
+
+    private val pluginConfigManager by lazy {
+        paymentLemonSqueezyPlugin.pluginBeanContext.getBean(PluginConfigManager::class.java) as PluginConfigManager<LemonSqueezyConfig>
+    }
+
+    private val paymentCallbackHandler by lazy {
+        paymentLemonSqueezyPlugin.pluginBeanContext.getBean(PaymentCallbackHandler::class.java)
+    }
 
     override fun getValidationHandler(schemaParser: SchemaParser): ValidationHandler? =
         ValidationHandlerBuilder.create(schemaParser)

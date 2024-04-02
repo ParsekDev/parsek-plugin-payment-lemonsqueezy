@@ -1,21 +1,30 @@
 package co.statu.rule.plugins.payment.lemonsqueezy.event
 
+import co.statu.parsek.api.annotation.EventListener
 import co.statu.parsek.api.config.PluginConfigManager
-import co.statu.parsek.api.event.ParsekEventListener
+import co.statu.parsek.api.event.CoreEventListener
 import co.statu.parsek.config.ConfigManager
 import co.statu.rule.plugins.payment.lemonsqueezy.LemonSqueezyConfig
 import co.statu.rule.plugins.payment.lemonsqueezy.PaymentLemonSqueezyPlugin
-import co.statu.rule.plugins.payment.lemonsqueezy.PaymentLemonSqueezyPlugin.Companion.logger
+import org.slf4j.Logger
 
-class ParsekEventHandler : ParsekEventListener {
+@EventListener
+class CoreEventHandler(
+    private val paymentLemonSqueezyPlugin: PaymentLemonSqueezyPlugin,
+    private val logger: Logger
+) : CoreEventListener {
     override suspend fun onConfigManagerReady(configManager: ConfigManager) {
-        PaymentLemonSqueezyPlugin.pluginConfigManager = PluginConfigManager(
+        val pluginConfigManager = PluginConfigManager(
             configManager,
-            PaymentLemonSqueezyPlugin.INSTANCE,
+            paymentLemonSqueezyPlugin,
             LemonSqueezyConfig::class.java,
-            logger,
             listOf(),
             listOf("payment-lemonsqueezy")
+        )
+
+        paymentLemonSqueezyPlugin.pluginBeanContext.beanFactory.registerSingleton(
+            pluginConfigManager.javaClass.name,
+            pluginConfigManager
         )
 
         logger.info("Initialized plugin config")

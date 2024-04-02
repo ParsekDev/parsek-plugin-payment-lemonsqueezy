@@ -1,5 +1,6 @@
 package co.statu.rule.plugins.payment.lemonsqueezy
 
+import co.statu.parsek.api.config.PluginConfigManager
 import co.statu.parsek.error.InternalServerError
 import co.statu.parsek.util.DateUtil
 import co.statu.rule.auth.db.model.User
@@ -10,16 +11,24 @@ import co.statu.rule.plugins.payment.util.TextUtil.toCurrencyFormat
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.HttpResponse
+import io.vertx.ext.web.client.WebClient
 import io.vertx.kotlin.coroutines.await
+import org.springframework.beans.factory.config.ConfigurableBeanFactory
+import org.springframework.context.annotation.Scope
+import org.springframework.stereotype.Component
 import java.util.*
 
-class LemonSqueezyPaymentIntegration : PaymentMethodIntegration {
+@Component
+@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+class LemonSqueezyPaymentIntegration(
+    private val paymentLemonSqueezyPlugin: PaymentLemonSqueezyPlugin,
+) : PaymentMethodIntegration {
     private val webClient by lazy {
-        PaymentLemonSqueezyPlugin.webClient
+        paymentLemonSqueezyPlugin.pluginBeanContext.getBean(WebClient::class.java)
     }
 
     private val pluginConfigManager by lazy {
-        PaymentLemonSqueezyPlugin.pluginConfigManager
+        paymentLemonSqueezyPlugin.pluginBeanContext.getBean(PluginConfigManager::class.java) as PluginConfigManager<LemonSqueezyConfig>
     }
 
     private val lemonSqueezyConfig by lazy {
