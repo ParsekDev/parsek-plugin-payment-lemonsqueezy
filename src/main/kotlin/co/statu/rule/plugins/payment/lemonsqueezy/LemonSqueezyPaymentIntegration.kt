@@ -49,6 +49,8 @@ class LemonSqueezyPaymentIntegration(
         val zipCode = billDetail.zipCode.ifBlank { "000000" }
         val taxNumber = billDetail.taxOrIdNum.ifBlank { "11111111111" }
 
+        val userFullName = user.additionalFields.getString("name") + " " + user.additionalFields.getString("surname")
+
         val data = JsonObject(
             mapOf(
                 "data" to mapOf(
@@ -61,12 +63,12 @@ class LemonSqueezyPaymentIntegration(
                             "enabled_variants" to listOf(lemonSqueezyConfig.singlePaymentId)
                         ),
                         "checkout_data" to mapOf(
-                            "name" to user.fullName,
+                            "name" to userFullName,
                             "email" to user.email,
                             "tax_number" to taxNumber,
                             "billing_address" to mapOf(
                                 "country" to "GE",
-                                "zip" to user.fullName,
+                                "zip" to userFullName,
                             ),
                             "custom" to mapOf(
                                 "purchaseId" to purchaseId,

@@ -32,7 +32,7 @@ dependencies {
     } else {
         compileOnly("com.github.StatuParsek:Parsek:main-SNAPSHOT")
         compileOnly("com.github.StatuParsek:parsek-plugin-database:main-SNAPSHOT")
-        compileOnly("com.github.StatuParsek:parsek-plugin-auth:main-SNAPSHOT")
+        compileOnly("com.github.StatuParsek:parsek-plugin-auth:2.0.0")
         compileOnly("com.github.StatuParsek:parsek-plugin-payment:main-SNAPSHOT")
     }
 
