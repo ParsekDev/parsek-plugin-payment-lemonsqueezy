@@ -15,11 +15,8 @@ class CoreEventHandler(
 ) : CoreEventListener {
     override suspend fun onConfigManagerReady(configManager: ConfigManager) {
         val pluginConfigManager = PluginConfigManager(
-            configManager,
             paymentLemonSqueezyPlugin,
             LemonSqueezyConfig::class.java,
-            listOf(),
-            listOf("payment-lemonsqueezy")
         )
 
         paymentLemonSqueezyPlugin.pluginBeanContext.beanFactory.registerSingleton(
